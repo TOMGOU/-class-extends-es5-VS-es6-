@@ -20,6 +20,162 @@ function updateHTMLFontSize(html) {
         html.style.fontSize = "100px";
     }
 }
+// oop
+/* (function(win){
+	function Play($tabs,$con,$mask,$conli){
+		this.$tabs = $tabs;
+		this.$con = $con;
+		this.$mask = $mask;
+		this.$conli = $conli;
+		this.len = $tabs.length;
+		this.index = 0;
+	};
+	Play.prototype = {
+		exec : function(){
+			this.addEvent();
+		},
+		addEvent : function(){
+			var This = this;
+			this.$tabs.bind( "tap", function(){
+				This.index = This.$tabs.index($(this));
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+			} );
+			this.$conli.on( "swiperight", function(){
+				This.index--;
+				if(This.index < 0)This.index = This.len-1;
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+				return false;
+			} );
+			this.$conli.on( "swipeleft", function(){
+				This.index++;
+				if(This.index > This.len-1)This.index %= This.len;
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+				return false;
+			} );
+		} 
+	};
+
+	function Arrowplay($tabs,$con,$mask,$conli,$arrow){
+		Play.call(this,$tabs,$con,$mask,$conli);
+		this.$arrow = $arrow;
+		this.len = $tabs.length;
+		this.index = 0;
+	}
+	//prototype inhert
+	function Fn(){};
+	Fn.prototype = Play.prototype;
+	Arrowplay.prototype = new Fn();
+	//extend
+	Arrowplay.prototype.start = Arrowplay.prototype.exec;
+	Arrowplay.prototype.exec = function(){
+		this.start();
+		this.arrow();
+	};
+	Arrowplay.prototype.arrow = function(){
+		var This = this;
+		this.$arrow.bind( "tap", function(){
+			var num = This.$arrow.index($(this));
+			num?This.index++:This.index--;
+			if(This.index > This.len-1)This.index %= This.len;
+			if(This.index < 0)This.index = This.len-1;
+			This.width = This.$mask.width();
+   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+			This.$con.stop().animate({
+		    	left: -This.width*This.index
+		    })
+		} );
+	};
+	win.Play = Play;
+	win.Arrowplay = Arrowplay;
+})(window); */
+
+//es6 oop
+(function(win){
+	class Play{
+		constructor($tabs,$con,$mask,$conli){
+			this.$tabs = $tabs;
+			this.$con = $con;
+			this.$mask = $mask;
+			this.$conli = $conli;
+			this.len = $tabs.length;
+			this.index = 0;
+		}
+		exec(){
+			this.addEvent();
+		}
+		addEvent(){
+			var This = this;
+			this.$tabs.bind( "tap", function(){
+				This.index = This.$tabs.index($(this));
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+			} );
+			this.$conli.on( "swiperight", function(){
+				This.index--;
+				if(This.index < 0)This.index = This.len-1;
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+				return false;
+			} );
+			this.$conli.on( "swipeleft", function(){
+				This.index++;
+				if(This.index > This.len-1)This.index %= This.len;
+				This.width = This.$mask.width();
+	   			This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+			    	left: -This.width*This.index
+			    })
+				return false;
+			} );
+		} 
+	}
+	//extends
+	class Arrowplay extends Play{
+		constructor($tabs,$con,$mask,$conli,$arrow){
+			super($tabs,$con,$mask,$conli,$arrow)
+			this.$arrow = $arrow;
+		}
+		exec(){
+			super.exec()
+			this.arrow()
+		}
+		arrow(){
+			var This = this;
+			this.$arrow.bind( "tap", function(){
+				var num = This.$arrow.index($(this));
+				num?This.index++:This.index--;
+				if(This.index > This.len-1)This.index %= This.len;
+				if(This.index < 0)This.index = This.len-1;
+				This.width = This.$mask.width();
+				   This.$tabs.eq(This.index).addClass( "on" ).siblings().removeClass("on");
+				This.$con.stop().animate({
+					left: -This.width*This.index
+				})
+			} );
+		};
+	}
+	win.Play = Play;
+	win.Arrowplay = Arrowplay;
+})(window);
+
 // news part
 (function(){
 	var $news = $("#news"),
@@ -29,43 +185,15 @@ function updateHTMLFontSize(html) {
 		$arrow = $news.find($("span")),
 		$conli = $news.find($(".mask .conBox li")),
 		index = 0,
-		len = $tabs.length;
+		len = $tabs.length,
+		/* arr = new Play($tabs,$con,$mask,$conli);
+		arr.exec(); */
 
-	$tabs.bind( "tap", tab );
-	$arrow.bind( "tap", arrow );
-	$conli.on( "swipeleft", swipeleft );
-	$conli.on( "swiperight", swiperight );
-	function tab(){
-		index = $tabs.index($(this));
-		change(index);
-	}
-	function arrow(){
-		var i = $arrow.index($(this));
-		i?index++:index--;
-		if(index > 3)index = index % len;
-		if(index < 0)index = 3;
-		change(index);
-	}
-	function swipeleft(){
-		index--;
-		if(index < 0)index = 3;
-		change(index);
-		return false;
-	}
-	function swiperight(){
-		index++;
-		if(index > 3)index = index % len;
-		change(index);
-		return false;
-	}
-	function change( index){
-		var width = $mask.width();
-	    $tabs.eq(index).addClass( "on" ).siblings().removeClass("on");
-	    $con.stop().animate({
-	    	left: -width*index
-	    })
-	}
+		//with arrow function
+		arrplay = new Arrowplay($tabs,$con,$mask,$conli,$arrow);
+		arrplay.exec();
 })();
+
 // features part
 (function(){
 	var $features = $("#features"),
@@ -111,41 +239,15 @@ function updateHTMLFontSize(html) {
 			$slider.eq(rIndex).addClass( "rightSide" );
 		}
 })();
+
 (function(){
 	var $forum = $("#forum"),
 		$tabs = $forum.find($(".tabs li")),
 		$con = $forum.find($(".mask .conBox")),
 		$mask = $forum.find($(".mask")),
 		$conli = $forum.find($(".mask .conBox li")),
-		index = 0,
-		len = $tabs.length;
-
-	$tabs.bind( "tap", tab );
-	$conli.on( "swipeleft", swipeleft );
-	$conli.on( "swiperight", swiperight );
-		function tab(){
-		index = $tabs.index($(this));
-		change(index);
-	}
-	function swipeleft(){
-		index--;
-		if(index < 0)index = 2;
-		change(index);
-		return false;
-	}
-	function swiperight(){
-		index++;
-		if(index > 2)index = index % len;
-		change(index);
-		return false;
-	}
-	function change( index){
-		var width = $mask.width();
-	    $tabs.eq(index).addClass( "on" ).siblings().removeClass("on");
-	    $con.stop().animate({
-	    	left: -width*index
-	    })
-	}
+		noarr = new Play($tabs,$con,$mask,$conli);
+		noarr.exec();
 })();
 // footer back to top
 (function(){
