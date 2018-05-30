@@ -2,6 +2,7 @@
 es5 oop class 
 
 (function(win){
+
 	function Play($tabs,$con,$mask,$conli){
 		this.$tabs = $tabs;
 		this.$con = $con;
@@ -10,10 +11,13 @@ es5 oop class
 		this.len = $tabs.length;
 		this.index = 0;
 	};
+
 	Play.prototype = {
+
 		exec : function(){
 			this.addEvent();
 		},
+        
 		addEvent : function(){
 			var This = this;
 			this.$tabs.bind( "tap", function(){
@@ -85,7 +89,9 @@ es5 oop class
 es6 oop class and extends
 
 (function(win){
+
 	class Play{
+
 		constructor($tabs,$con,$mask,$conli){
 			this.$tabs = $tabs;
 			this.$con = $con;
@@ -94,9 +100,11 @@ es6 oop class and extends
 			this.len = $tabs.length;
 			this.index = 0;
 		}
+
 		exec(){
 			this.addEvent();
 		}
+
 		addEvent(){
 			var This = this;
 			this.$tabs.bind( "tap", function(){
@@ -107,6 +115,7 @@ es6 oop class and extends
 			    	left: -This.width*This.index
 			    })
 			} );
+
 			this.$conli.on( "swiperight", function(){
 				This.index--;
 				if(This.index < 0)This.index = This.len-1;
@@ -117,6 +126,7 @@ es6 oop class and extends
 			    })
 				return false;
 			} );
+
 			this.$conli.on( "swipeleft", function(){
 				This.index++;
 				if(This.index > This.len-1)This.index %= This.len;
@@ -129,7 +139,9 @@ es6 oop class and extends
 			} );
 		} 
 	}
+
 	//extends
+
 	class Arrowplay extends Play{
 		constructor($tabs,$con,$mask,$conli,$arrow){
 			super($tabs,$con,$mask,$conli,$arrow)
